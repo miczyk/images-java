@@ -78,7 +78,7 @@ public class AuthController {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: password has to start and end with string " +
-                            "and has to contains digit, special char, lower and upper char (length beetwen 8 and 20 chars)!"));
+                            "and has to contains digit, special char, lower and upper letter (length beetwen 8 and 20 chars)!"));
 
         }
 
