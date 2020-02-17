@@ -43,7 +43,7 @@ public class ImageController {
 
 
     @CrossOrigin
-    @DeleteMapping("/images/{id}")
+    @DeleteMapping("/image/{id}")
     public ResponseEntity<?> deleteImage(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long idUser = ((UserDetailsImpl) (authentication).getPrincipal()).getId();
@@ -71,8 +71,8 @@ public class ImageController {
 
 
     @CrossOrigin
-    @PostMapping(value = "/images")
-    public ResponseEntity<?> postImage(@RequestParam("image") MultipartFile image) throws IOException {
+    @PostMapping(value = "/image")
+    public ResponseEntity<?> postImage(@RequestParam("picture") MultipartFile picture) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long idUser = ((UserDetailsImpl) (authentication).getPrincipal()).getId();
 //        if (!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -81,7 +81,7 @@ public class ImageController {
 //            System.out.println("idUsera:" + idUser);
 //        }
         User user = userRepository.getOne(idUser);
-        Optional<Image> presentImageOpt = user.getImages().stream().filter(i -> i.getName().equals(image.getOriginalFilename())).findAny();
+        Optional<Image> presentImageOpt = user.getImages().stream().filter(i -> i.getName().equals(picture.getOriginalFilename())).findAny();
         if (presentImageOpt.isPresent()) {
             return ResponseEntity
                     .badRequest()
@@ -91,13 +91,13 @@ public class ImageController {
         if (!userDirectory.exists()){
             userDirectory.mkdir();
         }
-        Path filepath = Paths.get(userDirectory.getPath(), image.getOriginalFilename());
+        Path filepath = Paths.get(userDirectory.getPath(), picture.getOriginalFilename());
         try (OutputStream os = Files.newOutputStream(filepath)) {
-            os.write(image.getBytes());
+            os.write(picture.getBytes());
         }
 
         Image newImage = new Image();
-        newImage.setName(image.getOriginalFilename());
+        newImage.setName(picture.getOriginalFilename());
         imageRepository.save(newImage);
         user.getImages().add(newImage);
         userRepository.save(user);
@@ -106,7 +106,7 @@ public class ImageController {
     }
 
 
-    @GetMapping(value="/images", params = { "page", "sorting" })
+    @GetMapping(value="/image", params = { "page", "sorting" })
     @CrossOrigin
     public ResponseEntity<ImagesResponse> getImages(Integer page, String sorting) {
         ImagesResponse imagesResponse = new ImagesResponse();
